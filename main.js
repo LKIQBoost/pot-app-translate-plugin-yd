@@ -40,28 +40,15 @@ async function translate(text, from, to, options) {
 
     const word = (data.ec && data.ec.word) || (data.ce && data.ce.word);
     if (word && word.trs && word.trs.length > 0) {
-        const explanations = [];
+        const parts = [];
         for (const tr of word.trs) {
-            const value = tr.tran || tr["#text"] || tr["#tran"] || "";
-            const explains = value.split(/[；;]/).map((e) => e.trim()).filter((e) => e.length > 0);
-            if (explains.length > 0) {
-                explanations.push({ trait: tr.pos || "", explains });
+            const value = tr.tran || tr["#text"] || tr["#tran"];
+            if (value) {
+                parts.push(value);
             }
         }
-        if (explanations.length > 0) {
-            const target = { explanations };
-            const associations = [];
-            if (word.wfs) {
-                for (const wf of word.wfs) {
-                    if (wf.wf) {
-                        associations.push(`${wf.wf.name}: ${wf.wf.value}`);
-                    }
-                }
-            }
-            if (associations.length > 0) {
-                target.associations = associations;
-            }
-            return target;
+        if (parts.length > 0) {
+            return parts.join("\n");
         }
     }
 
